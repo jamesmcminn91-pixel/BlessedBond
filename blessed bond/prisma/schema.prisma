@@ -1,0 +1,84 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum SubscriptionTier {
+  FREE
+  PREMIUM
+  WHO_LIKED_YOU
+}
+
+model User {
+  id              String            @id @default(cuid())
+  email           String            @unique
+  passwordHash    String
+  name            String?
+  age             Int?
+  city            String?
+  country         String?
+  gender          Gender?
+  seeking         String?
+  denomination    String?
+  intent          String?
+  church          String?
+  bio             String?
+  faith           String?
+  partner         String?
+  premiumTier     SubscriptionTier  @default(FREE)
+  stripeCustomerId String?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+}
+
+model Profile {
+  id           String   @id @default(cuid())
+  userId       String   @unique
+  name         String
+  age          Int
+  city         String
+  country      String?
+  gender       Gender
+  seeking      String
+  denomination String
+  intent       String
+  church       String?
+  bio          String
+  faith        String
+  partner      String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Like {
+  id        String   @id @default(cuid())
+  fromUserId String
+  toUserId   String
+  createdAt  DateTime @default(now())
+}
+
+model Match {
+  id        String   @id @default(cuid())
+  userAId   String
+  userBId   String
+  createdAt DateTime @default(now())
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  matchId   String
+  senderId  String
+  body      String
+  createdAt DateTime @default(now())
+}

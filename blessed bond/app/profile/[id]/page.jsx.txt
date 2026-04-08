@@ -1,0 +1,52 @@
+import { profiles } from '../../../data/profiles'
+
+export default function ProfileDetailPage({ params }) {
+  const profile = profiles.find((item) => item.id === params.id) ?? profiles[0]
+
+  return (
+    <main style={styles.page}>
+      <article style={styles.card}>
+        <p style={styles.kicker}>Blessed Bond</p>
+        <h1 style={styles.title}>{profile.name}, {profile.age}</h1>
+        <p style={styles.subtitle}>{profile.intent} • {profile.denomination} • {profile.distance}</p>
+
+        <section style={styles.section}>
+          <h2 style={styles.heading}>Bio</h2>
+          <p style={styles.text}>{profile.bio}</p>
+        </section>
+
+        <section style={styles.section}>
+          <h2 style={styles.heading}>Faith life</h2>
+          <p style={styles.text}>{profile.faith}</p>
+        </section>
+
+        <section style={styles.section}>
+          <h2 style={styles.heading}>Conversation prompts</h2>
+          <ul style={styles.list}>
+            {profile.prompts.map((prompt) => <li key={prompt}>{prompt}</li>)}
+          </ul>
+        </section>
+
+        <div style={styles.actions}>
+          <button style={styles.like}>Like</button>
+          <button style={styles.pass}>Pass</button>
+        </div>
+      </article>
+    </main>
+  )
+}
+
+const styles = {
+  page: { maxWidth: 900, margin: '0 auto', padding: '24px 24px 80px' },
+  card: { background: '#fff', borderRadius: 24, padding: 28, border: '1px solid #e5e7eb', boxShadow: '0 12px 40px rgba(0,0,0,0.06)' },
+  kicker: { textTransform: 'uppercase', letterSpacing: '0.18em', fontSize: 12, color: '#b45309', fontWeight: 700 },
+  title: { fontSize: 44, margin: '8px 0 10px' },
+  subtitle: { color: '#6b7280', fontSize: 18 },
+  section: { marginTop: 24 },
+  heading: { marginBottom: 8 },
+  text: { color: '#1f2937', lineHeight: 1.7 },
+  list: { paddingLeft: 20, lineHeight: 1.8 },
+  actions: { display: 'flex', gap: 12, marginTop: 28 },
+  like: { background: '#166534', color: '#fff', border: 'none', padding: '14px 18px', borderRadius: 999, fontWeight: 700 },
+  pass: { background: '#fff', color: '#991b1b', border: '1px solid #fecaca', padding: '14px 18px', borderRadius: 999, fontWeight: 700 },
+}

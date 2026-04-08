@@ -1,0 +1,111 @@
+'use client'
+
+import { useMemo, useState } from 'react'
+
+const emptyProfile = {
+  email: '',
+  firstName: '',
+  age: '',
+  city: '',
+  country: '',
+  gender: '',
+  seeking: '',
+  denomination: '',
+  intent: '',
+  church: '',
+  bio: '',
+  faith: '',
+  partner: '',
+}
+
+export default function ProfilePage() {
+  const [profile, setProfile] = useState(emptyProfile)
+  const [saved, setSaved] = useState(false)
+
+  const completeness = useMemo(() => {
+    const filled = Object.values(profile).filter(Boolean).length
+    return Math.round((filled / Object.keys(emptyProfile).length) * 100)
+  }, [profile])
+
+  async function saveProfile() {
+    await fetch('/api/profiles', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(profile),
+    })
+    setSaved(true)
+  }
+
+  return (
+    <main style={styles.page}>
+      <section style={styles.card}>
+        <p style={styles.kicker}>Blessed Bond</p>
+        <h1 style={styles.title}>Create your profile</h1>
+        <p style={styles.subtitle}>Share your faith, intent, and what kind of relationship you are praying for.</p>
+
+        <div style={styles.progressWrap}>
+          <div style={styles.progressLabel}>Profile completeness</div>
+          <div style={styles.progressBar}><div style={{ ...styles.progressFill, width: `${completeness}%` }} /></div>
+          <div style={styles.progressValue}>{completeness}%</div>
+        </div>
+
+        <div style={styles.formGrid}>
+          <Field label="Email" value={profile.email} onChange={(v) => setProfile({ ...profile, email: v })} placeholder="maya@example.com" />
+          <Field label="First name" value={profile.firstName} onChange={(v) => setProfile({ ...profile, firstName: v })} placeholder="Maya" />
+          <Field label="Age" value={profile.age} onChange={(v) => setProfile({ ...profile, age: v })} placeholder="29" />
+          <Field label="City" value={profile.city} onChange={(v) => setProfile({ ...profile, city: v })} placeholder="Nashville" />
+          <Field label="Country" value={profile.country} onChange={(v) => setProfile({ ...profile, country: v })} placeholder="United States" />
+          <Field label="Gender" value={profile.gender} onChange={(v) => setProfile({ ...profile, gender: v })} placeholder="Female" />
+          <Field label="Seeking" value={profile.seeking} onChange={(v) => setProfile({ ...profile, seeking: v })} placeholder="Male / Female" />
+          <Field label="Denomination" value={profile.denomination} onChange={(v) => setProfile({ ...profile, denomination: v })} placeholder="Non-denominational" />
+          <Field label="Intent" value={profile.intent} onChange={(v) => setProfile({ ...profile, intent: v })} placeholder="Marriage-minded" />
+          <Field label="Church home" value={profile.church} onChange={(v) => setProfile({ ...profile, church: v })} placeholder="Grace Fellowship" />
+        </div>
+
+        <Field label="Bio" value={profile.bio} onChange={(v) => setProfile({ ...profile, bio: v })} placeholder="Tell the story of your faith and the kind of life you want to build together." textarea />
+        <Field label="What does faith mean to you?" value={profile.faith} onChange={(v) => setProfile({ ...profile, faith: v })} placeholder="Prayer, scripture, community, service..." textarea />
+        <Field label="What are you looking for in a partner?" value={profile.partner} onChange={(v) => setProfile({ ...profile, partner: v })} placeholder="Kindness, spiritual maturity, shared values..." textarea />
+
+        <div style={styles.actions}>
+          <button onClick={saveProfile} style={styles.primaryButton}>Save profile</button>
+          <button style={styles.secondaryButton}>Preview profile</button>
+        </div>
+        {saved ? <p style={styles.saved}>Profile saved to the database.</p> : null}
+      </section>
+    </main>
+  )
+}
+
+function Field({ label, value, onChange, placeholder, textarea = false }) {
+  return (
+    <label style={styles.field}>
+      <span style={styles.label}>{label}</span>
+      {textarea ? (
+        <textarea value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} style={{ ...styles.input, minHeight: 120, resize: 'vertical' }} />
+      ) : (
+        <input value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} style={styles.input} />
+      )}
+    </label>
+  )
+}
+
+const styles = {
+  page: { maxWidth: 1000, margin: '0 auto', padding: '24px 24px 80px' },
+  card: { background: '#fff', borderRadius: 24, padding: 28, border: '1px solid #e5e7eb', boxShadow: '0 12px 40px rgba(0,0,0,0.06)' },
+  kicker: { textTransform: 'uppercase', letterSpacing: '0.18em', fontSize: 12, color: '#b45309', fontWeight: 700 },
+  title: { fontSize: 44, margin: '8px 0 10px' },
+  subtitle: { color: '#4b5563', fontSize: 18, lineHeight: 1.6, marginBottom: 24 },
+  progressWrap: { display: 'grid', gap: 8, marginBottom: 20 },
+  progressLabel: { fontWeight: 700 },
+  progressBar: { width: '100%', height: 12, borderRadius: 999, background: '#f3f4f6', overflow: 'hidden' },
+  progressFill: { height: '100%', background: 'linear-gradient(90deg, #7c2d12, #f59e0b)' },
+  progressValue: { fontSize: 13, color: '#6b7280' },
+  formGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16, marginBottom: 16 },
+  field: { display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 16 },
+  label: { fontWeight: 700, color: '#1f2937' },
+  input: { border: '1px solid #d1d5db', borderRadius: 14, padding: '14px 16px', fontSize: 16, fontFamily: 'inherit' },
+  actions: { display: 'flex', gap: 12, marginTop: 18, flexWrap: 'wrap' },
+  primaryButton: { background: '#7c2d12', color: '#fff', border: 'none', padding: '14px 18px', borderRadius: 999, fontWeight: 700, fontSize: 16 },
+  secondaryButton: { background: '#fff', color: '#7c2d12', border: '1px solid #fcd34d', padding: '14px 18px', borderRadius: 999, fontWeight: 700, fontSize: 16 },
+  saved: { marginTop: 16, color: '#166534', fontWeight: 700 },
+}
